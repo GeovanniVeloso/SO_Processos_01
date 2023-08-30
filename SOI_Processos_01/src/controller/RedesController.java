@@ -60,9 +60,41 @@ public class RedesController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}else {
+			if(SO.contains("Linux")){
+				try {
+					Process p = Runtime.getRuntime().exec("ip addr");
+					InputStream fluxo = p.getInputStream();
+					InputStreamReader leitor = new InputStreamReader(fluxo);
+					BufferedReader buffer = new BufferedReader(leitor);
+					String linha = buffer.readLine();
+					
+						while(linha != null) {
+									if(linha.contains("mtu")) {
+										String[]vlinha = linha.split(": ");
+										adaptador = vlinha[1];
+										System.out.println(adaptador);
+									}else {
+										if(linha.contains("inet")) {
+											String[]vlinha2 = linha.split(" ");
+											String ipv4 = vlinha2[1];
+											System.out.println(ipv4);
+										}
+									}
+								}	
+						
+					linha = buffer.readLine();	
+					
+							
+						buffer.close();
+						leitor.close();
+						fluxo.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}		
 	}
-	
 	
 	public void ping_teste() {
 		String OS = SO_teste();
@@ -90,7 +122,31 @@ public class RedesController {
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}else {
+		if(OS.contains("Linux")) {
+			try {
+				Process p = Runtime.getRuntime().exec("ping -4 -c 10 www.google.com.br");
+				InputStream fluxo = p.getInputStream();
+				InputStreamReader leitor = new InputStreamReader(fluxo);
+				BufferedReader buffer = new BufferedReader(leitor);
+				String linha = buffer.readLine();
+				
+				while(linha != null) {
+					if(linha.contains("avg")) {
+						String[]vlinha = linha.split("/");
+						ping = vlinha[4];
+					}
+			linha = buffer.readLine();	
+			}
+				System.out.println("O tempo médio por ping é "+ping);
+				buffer.close();
+				leitor.close();
+				fluxo.close();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
+}
 }
 }
 
